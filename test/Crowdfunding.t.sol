@@ -9,20 +9,15 @@ contract CrowdfundingTest is Test {
     Crowdfunding public campaign;
     address public owner = address(this);
     address public alice = address(0xA11CE);
-    address public bob   = address(0xB0B);
+    address public bob = address(0xB0B);
 
-    uint256 constant GOAL     = 1 ether;
+    uint256 constant GOAL = 1 ether;
     uint256 constant DURATION = 7 days;
 
     function setUp() public {
-        campaign = new Crowdfunding(
-            "Arc Builder Fund",
-            "Fund Arc ecosystem builders",
-            GOAL,
-            DURATION
-        );
+        campaign = new Crowdfunding("Arc Builder Fund", "Fund Arc ecosystem builders", GOAL, DURATION);
         vm.deal(alice, 10 ether);
-        vm.deal(bob,   10 ether);
+        vm.deal(bob, 10 ether);
     }
 
     function testInitialState() public view {

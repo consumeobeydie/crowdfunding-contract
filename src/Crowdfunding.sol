@@ -10,11 +10,11 @@ contract Crowdfunding {
     address public immutable owner;
     uint256 public immutable goal;
     uint256 public immutable deadline;
-    string  public title;
-    string  public description;
+    string public title;
+    string public description;
 
     uint256 public totalRaised;
-    bool    public withdrawn;
+    bool public withdrawn;
 
     mapping(address => uint256) public contributions;
     address[] private contributors;
@@ -47,19 +47,14 @@ contract Crowdfunding {
         _;
     }
 
-    constructor(
-        string memory _title,
-        string memory _description,
-        uint256 _goal,
-        uint256 _durationSeconds
-    ) {
+    constructor(string memory _title, string memory _description, uint256 _goal, uint256 _durationSeconds) {
         require(_goal > 0, "Goal must be > 0");
         require(_durationSeconds > 0, "Duration must be > 0");
-        owner       = msg.sender;
-        title       = _title;
+        owner = msg.sender;
+        title = _title;
         description = _description;
-        goal        = _goal;
-        deadline    = block.timestamp + _durationSeconds;
+        goal = _goal;
+        deadline = block.timestamp + _durationSeconds;
     }
 
     /// @notice Contribute native USDC to the campaign.
@@ -79,7 +74,7 @@ contract Crowdfunding {
         if (withdrawn) revert AlreadyWithdrawn();
         withdrawn = true;
         uint256 amount = totalRaised;
-        (bool ok, ) = owner.call{value: amount}("");
+        (bool ok,) = owner.call{value: amount}("");
         require(ok, "Transfer failed");
         emit Withdrawn(owner, amount);
     }
@@ -90,28 +85,25 @@ contract Crowdfunding {
         uint256 amount = contributions[msg.sender];
         if (amount == 0) revert NothingToRefund();
         contributions[msg.sender] = 0;
-        (bool ok, ) = msg.sender.call{value: amount}("");
+        (bool ok,) = msg.sender.call{value: amount}("");
         require(ok, "Refund failed");
         emit Refunded(msg.sender, amount);
     }
 
     /// @notice Returns campaign status summary.
-    function getStatus() external view returns (
-        uint256 raised,
-        uint256 goalAmount,
-        uint256 deadlineTimestamp,
-        bool goalMet,
-        bool campaignActive,
-        bool fundsWithdrawn
-    ) {
-        return (
-            totalRaised,
-            goal,
-            deadline,
-            totalRaised >= goal,
-            block.timestamp < deadline,
-            withdrawn
-        );
+    function getStatus()
+        external
+        view
+        returns (
+            uint256 raised,
+            uint256 goalAmount,
+            uint256 deadlineTimestamp,
+            bool goalMet,
+            bool campaignActive,
+            bool fundsWithdrawn
+        )
+    {
+        return (totalRaised, goal, deadline, totalRaised >= goal, block.timestamp < deadline, withdrawn);
     }
 
     /// @notice Returns number of unique contributors.
